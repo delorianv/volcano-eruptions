@@ -5,7 +5,7 @@ import re
 import time
 
 # ------------------------
-# Page Config & Enhanced CSS (Dark Volcano Theme)
+# Page Config & Enhanced CSS (Dark Volcano Theme + Responsive Design)
 # ------------------------
 st.set_page_config(page_title="Volcano Eruption Animation", layout="wide")
 
@@ -15,7 +15,7 @@ custom_css = """
 
   /* Base styling for a volcanic theme */
   body, .stApp {
-    background: #2e2e2e;  /* Dark volcanic ash background */
+    background: #2e2e2e;
     font-family: 'Roboto', sans-serif;
     color: #e0e0e0;
     margin: 0;
@@ -26,7 +26,7 @@ custom_css = """
   .header {
     text-align: center;
     padding: 2rem 1rem;
-    background: linear-gradient(135deg, #8B0000, #FF4500); /* Deep red to fiery orange */
+    background: linear-gradient(135deg, #8B0000, #FF4500);
     color: #fff;
     border-radius: 0 0 20px 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -38,7 +38,6 @@ custom_css = """
     letter-spacing: 1px;
     position: relative;
   }
-  /* Add a volcano emoji before the header text */
   .header h1:before {
     content: "🌋 ";
     font-size: 1.2em;
@@ -53,9 +52,9 @@ custom_css = """
     color: #ccc;
   }
 
-  /* Button styling with a lava feel */
+  /* Button styling */
   .stButton>button {
-    background-color: #E74C3C; /* Lava red */
+    background-color: #E74C3C;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -70,38 +69,21 @@ custom_css = """
     transform: translateY(-3px);
   }
 
-  /* Custom slider container styling */
+  /* Responsive Slider styling */
   div[data-baseweb="slider"] {
-    max-width: 40% !important;
-    min-width: 40% !important;
+    max-width: 30% !important;
+    min-width: 30% !important;
     margin-left: 0 !important;
-    color: #fff !important;  /* Ensure slider text is white */
+    color: #fff !important;
   }
-  
-  /* Updated slider track styling: greyish gradient */
-  div[data-baseweb="slider"] > div {
-    background: linear-gradient(90deg, #555, #666) !important;
-    border-radius: 4px !important;
-    height: 50px !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  /* Slider thumb styling */
-  div[data-baseweb="slider"] [role="slider"] {
-    background-color: #E74C3C !important;
-    border: 2px solid #2e2e2e !important;
-    width: 24px !important;
-    height: 24px !important;
-    border-radius: 50% !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    transition: transform 0.05s ease, box-shadow 0.3s ease;
-  }
-  div[data-baseweb="slider"] [role="slider"]:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+  @media only screen and (max-width: 768px) {
+    div[data-baseweb="slider"] {
+      max-width: 100% !important;
+      min-width: 100% !important;
+    }
   }
 
-  /* Data table styling with volcano theme */
+  /* Data table styling */
   .custom-table {
     background: #424242;
     border-radius: 12px;
@@ -145,7 +127,7 @@ custom_css = """
     margin: 1rem 0;
   }
 
-  /* Tooltip styling for pydeck with a volcano touch */
+  /* Tooltip styling for pydeck */
   .deck-tooltip {
     font-size: 0.9rem;
     line-height: 1.4;
@@ -154,6 +136,16 @@ custom_css = """
     padding: 0.5rem;
     border-radius: 4px;
     border: 1px solid #E74C3C;
+  }
+
+  /* Responsive map styling */
+  .stPydeckChart {
+    height: 300px; /* Default map height for small screens */
+  }
+  @media only screen and (min-width: 768px) {
+    .stPydeckChart {
+      height: 600px; /* Larger map height for bigger screens */
+    }
   }
 </style>
 """
@@ -203,11 +195,10 @@ post_fade = 15  # Fade window after eruption
 eruption_years = df["Eruption_Year"].dropna() if not df.empty else pd.Series()
 if not eruption_years.empty:
     default_min = int(eruption_years.min()) - pre_fade
-    default_max = int(eruption_years.max()) + post_fade  # This becomes 2038 if latest is 2023
+    default_max = int(eruption_years.max()) + post_fade
 else:
     default_min, default_max = -4360, 2023
 
-# If you prefer the slider to stop at 2023, override the computed maximum:
 computed_min = min(default_min, -4360)
 computed_max = 2023  # Force upper bound to 2023
 
@@ -220,7 +211,6 @@ simulation_range = st.slider(
     format="%d"
 )
 
-# Animation Speed: slide right for faster animation.
 animation_speed = st.slider("Step 2 : Animation Speed (slide right for faster)", min_value=1, max_value=100, value=50, step=1)
 animation_delay = 1.0 / animation_speed
 
@@ -236,10 +226,9 @@ tooltip = {
 
 def compute_color(row, sim_year, pre=5, post=5):
     eruption_year = row["Eruption_Year"]
-    base_color = [200, 200, 200, 100]  # Grey for inactive volcanoes
+    base_color = [200, 200, 200, 100]
     if pd.isna(eruption_year) or sim_year < eruption_year - pre or sim_year > eruption_year + post:
         return base_color
-    # Fade in (before eruption) or fade out (after eruption)
     if sim_year <= eruption_year:
         f = (sim_year - (eruption_year - pre)) / pre
     else:
@@ -303,7 +292,7 @@ def update_map(sim_year):
 # Animation Execution with Legend on the Right
 # ------------------------
 if st.button("Start Animation"):
-    # Create a container for the legend that appears on the right side
+    # Create a legend container that appears on the right side during the animation
     legend_container = st.empty()
     legend_html = """
     <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(46, 46, 46, 0.9); padding: 10px 15px; border-radius: 8px; z-index: 1000; box-shadow: 0px 4px 10px rgba(0,0,0,0.5);">
@@ -331,7 +320,7 @@ if st.button("Start Animation"):
         progress_bar.progress((i + 1) / total_years)
         time.sleep(animation_delay)
     
-    # Clear the legend once the animation finishes
+    # Remove the legend after the animation ends
     legend_container.empty()
 else:
     st.info("Press 'Start Animation' to run the simulation automatically.")
@@ -340,7 +329,6 @@ else:
 # (Optional) Styled Data Table (Filtered by Selected Time Frame)
 # ------------------------
 st.subheader("Volcano Data")
-# Filter the data so that only volcanoes with an eruption year within the selected time frame are shown
 filtered_df = df[(df["Eruption_Year"] >= simulation_range[0]) & (df["Eruption_Year"] <= simulation_range[1])]
 html_table = filtered_df.reset_index(drop=True).to_html(classes="custom-table", index=False)
 st.markdown(html_table, unsafe_allow_html=True)
