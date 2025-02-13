@@ -117,6 +117,20 @@ custom_css = """
     color: #e0e0e0;
   }
 
+  /* Hide data table on smartphones */
+  @media only screen and (max-width: 768px) {
+    .custom-table {
+      display: none !important;
+    }
+  }
+
+  /* Hide Volcano Data title on smartphones */
+  @media only screen and (max-width: 768px) {
+    .volcano-data-title {
+      display: none !important;
+    }
+  }
+
   /* Info message styling */
   .stInfo {
     background-color: #37474f;
@@ -328,7 +342,9 @@ else:
 # ------------------------
 # (Optional) Styled Data Table (Filtered by Selected Time Frame)
 # ------------------------
-st.subheader("Volcano Data")
+
+# Replace st.subheader with st.markdown and a custom class so we can hide it in smartphone mode
+st.markdown("<h2 class='volcano-data-title'>Volcano Data</h2>", unsafe_allow_html=True)
 filtered_df = df[(df["Eruption_Year"] >= simulation_range[0]) & (df["Eruption_Year"] <= simulation_range[1])]
 html_table = filtered_df.reset_index(drop=True).to_html(classes="custom-table", index=False)
 st.markdown(html_table, unsafe_allow_html=True)
