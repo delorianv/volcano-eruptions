@@ -154,11 +154,11 @@ custom_css = """
 
   /* Responsive map styling */
   .stPydeckChart {
-    height: 200px; /* Default map height for small screens */
+    height: 120px; /* Default map height for small screens */
   }
   @media only screen and (min-width: 768px) {
     .stPydeckChart {
-      height: 800px; /* Larger map height for bigger screens */
+      height: 900px; /* Larger map height for bigger screens */
     }
   }
 </style>
