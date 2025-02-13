@@ -334,7 +334,7 @@ def update_map(sim_year):
         map_style="mapbox://styles/mapbox/dark-v10",
     )
     
-    map_placeholder.pydeck_chart(deck, height=200)
+    map_placeholder.pydeck_chart(deck, height=220)
 
 
 # ------------------------
