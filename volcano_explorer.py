@@ -270,7 +270,7 @@ def update_map(sim_year):
         data=inactive_df,
         get_position='[Longitude, Latitude]',
         get_color="color",
-        get_radius=150000,
+        get_radius=170000,
         pickable=True,
         wrapLongitude=False
     )
@@ -279,7 +279,7 @@ def update_map(sim_year):
         data=active_df,
         get_position='[Longitude, Latitude]',
         get_color="color",
-        get_radius=250000,
+        get_radius=350000,
         pickable=True,
         wrapLongitude=False
     )
