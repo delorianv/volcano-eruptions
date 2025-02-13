@@ -72,8 +72,8 @@ custom_css = """
 
   /* Custom slider container styling */
   div[data-baseweb="slider"] {
-    max-width: 30% !important;
-    min-width: 30% !important;
+    max-width: 40% !important;
+    min-width: 40% !important;
     margin-left: 0 !important;
     color: #fff !important;  /* Ensure slider text is white */
   }
@@ -225,8 +225,15 @@ animation_speed = st.slider("Step 2 : Animation Speed (slide right for faster)",
 animation_delay = 1.0 / animation_speed
 
 # ------------------------
-# Helper Functions
+# Map Placeholder
 # ------------------------
+map_placeholder = st.empty()
+
+tooltip = {
+    "html": "<b>Name:</b> {Volcano_Name} <br/><b>Type:</b> {Volcano_Type} <br/><b>Last Eruption:</b> {Last_Eruption}",
+    "style": {"backgroundColor": "black", "color": "white"}
+}
+
 def compute_color(row, sim_year, pre=5, post=5):
     eruption_year = row["Eruption_Year"]
     base_color = [200, 200, 200, 100]  # Grey for inactive volcanoes
@@ -239,14 +246,6 @@ def compute_color(row, sim_year, pre=5, post=5):
         f = 1 - ((sim_year - eruption_year) / post)
     alpha = int(f * 180)
     return [255, 0, 0, alpha]
-
-# Map placeholder
-map_placeholder = st.empty()
-
-tooltip = {
-    "html": "<b>Name:</b> {Volcano_Name} <br/><b>Type:</b> {Volcano_Type} <br/><b>Last Eruption:</b> {Last_Eruption}",
-    "style": {"backgroundColor": "black", "color": "white"}
-}
 
 def update_map(sim_year):
     data_copy = df.copy()
@@ -270,7 +269,7 @@ def update_map(sim_year):
         data=inactive_df,
         get_position='[Longitude, Latitude]',
         get_color="color",
-        get_radius=170000,
+        get_radius=180000,
         pickable=True,
         wrapLongitude=False
     )
@@ -301,9 +300,25 @@ def update_map(sim_year):
     map_placeholder.pydeck_chart(deck)
 
 # ------------------------
-# Animation Execution
+# Animation Execution with Legend on the Right
 # ------------------------
 if st.button("Start Animation"):
+    # Create a container for the legend that appears on the right side
+    legend_container = st.empty()
+    legend_html = """
+    <div style="position: fixed; bottom: 20px; right: 20px; background: rgba(46, 46, 46, 0.9); padding: 10px 15px; border-radius: 8px; z-index: 1000; box-shadow: 0px 4px 10px rgba(0,0,0,0.5);">
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+            <div style="width: 15px; height: 15px; background: red; border-radius: 50%; margin-right: 8px;"></div>
+            <span>Volcano Eruption</span>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <div style="width: 15px; height: 15px; background: grey; border-radius: 50%; margin-right: 8px;"></div>
+            <span>Dormant Volcano</span>
+        </div>
+    </div>
+    """
+    legend_container.markdown(legend_html, unsafe_allow_html=True)
+    
     total_years = simulation_range[1] - simulation_range[0] + 1
     progress_bar = st.progress(0)
     year_display = st.empty()
@@ -315,6 +330,9 @@ if st.button("Start Animation"):
         )
         progress_bar.progress((i + 1) / total_years)
         time.sleep(animation_delay)
+    
+    # Clear the legend once the animation finishes
+    legend_container.empty()
 else:
     st.info("Press 'Start Animation' to run the simulation automatically.")
 
