@@ -286,6 +286,40 @@ def update_map(sim_year):
         wrapLongitude=False
     )
     
+    # ------------------------
+    # NEW: Add Shock Wave Effect for Active Volcanoes
+    # ------------------------
+    shock_wave_layer = None
+    if not active_df.empty:
+        # Compute a dynamic ring effect based on current time
+        current_time = time.time()
+        cycle_duration = 1.5  # seconds for a full shock wave cycle
+        t = (current_time % cycle_duration) / cycle_duration  # progress (0 to 1)
+        base_radius = 350000  # same as active volcano radius
+        max_extra = 150000    # maximum extra radius for the shock wave
+        dynamic_radius = base_radius + t * max_extra
+        shock_alpha = int((1 - t) * 200)  # fades out as it expands
+        shock_color = [255, 255, 255, shock_alpha]  # white ring for a wow effect
+
+        shock_wave_layer = pdk.Layer(
+            "ScatterplotLayer",
+            data=active_df,
+            get_position='[Longitude, Latitude]',
+            get_radius=dynamic_radius,
+            stroked=True,
+            filled=False,
+            get_line_color=shock_color,
+            lineWidthMinPixels=2,
+            pickable=False,
+            wrapLongitude=False
+        )
+    
+    # Combine layers – insert the shock wave layer between inactive and active layers if available
+    layers = [inactive_layer]
+    if shock_wave_layer:
+        layers.append(shock_wave_layer)
+    layers.append(active_layer)
+    
     view_state = pdk.ViewState(
         latitude=0,
         longitude=0,
@@ -294,7 +328,7 @@ def update_map(sim_year):
     )
     
     deck = pdk.Deck(
-        layers=[inactive_layer, active_layer],
+        layers=layers,
         initial_view_state=view_state,
         tooltip=tooltip,
         map_style="mapbox://styles/mapbox/dark-v10",
