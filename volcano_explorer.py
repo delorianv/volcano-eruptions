@@ -164,7 +164,7 @@ custom_css = """
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
-st.markdown('<div class="header"><h1>Volcano Eruption Animation</h1></div>', unsafe_allow_html=True)
+st.markdown('<div class="header"><h1>Volcano Eruption Animation (from 4360 BC to AD 2023)</h1></div>', unsafe_allow_html=True)
 
 st.markdown(
     """
