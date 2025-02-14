@@ -166,12 +166,36 @@ custom_css = """
 st.markdown(custom_css, unsafe_allow_html=True)
 st.markdown('<div class="header"><h1>Volcano Eruption Animation (from 4360 BC to AD 2023)</h1></div>', unsafe_allow_html=True)
 
+# ------------------------
+# About Section: Introduction & Guide
+# ------------------------
 st.markdown(
     """
-    <p style="text-align: center;">
-    Animate volcano eruptions over time. Volcanoes are represented as grey circles, and those that are active (within a fade window) pulse in red.
-    Adjust the simulation time frame and speed using the controls below.
-    </p>
+    <div style="padding: 1rem 2rem; background: #424242; border-radius: 8px; margin: 0 2rem 2rem;">
+      <h2 style="text-align: left; color: #FFFFFF;">About This App</h2>
+      <p>
+        Welcome to the <strong>Volcano Eruption Animation</strong> app! This interactive visualization lets you explore the history of volcano eruptions from 4360 BC to AD 2023.
+      </p>
+      <p>
+        <strong>Key Features:</strong>
+      </p>
+      <ul>
+        <li><strong>Animated Map:</strong> View volcano locations on a world map. Active eruptions pulse in red, while dormant ones are shown in grey.</li>
+        <li><strong>Simulation Controls:</strong> Adjust the time frame and animation speed using the sliders below.</li>
+        <li><strong>Data Table:</strong> Check out detailed volcano data (name, country, type, last eruption) displayed in a styled table.</li>
+      </ul>
+      <p>
+        <strong>How to Use:</strong>
+      </p>
+      <ol>
+        <li><em>Step 1:</em> Use the first slider to set the simulation time frame (years).</li>
+        <li><em>Step 2:</em> Use the second slider to adjust the animation speed.</li>
+        <li>Click the <strong>Start Animation</strong> button to watch the volcano eruptions come to life!</li>
+      </ol>
+      <p>
+        Enjoy exploring the dynamic history of our planet's volcanoes!
+      </p>
+    </div>
     """, unsafe_allow_html=True
 )
 
@@ -335,7 +359,6 @@ def update_map(sim_year):
     )
     
     map_placeholder.pydeck_chart(deck, height=240)
-
 
 # ------------------------
 # Animation Execution with Legend on the Right
